@@ -20,7 +20,8 @@ namespace GrainBridge
   {
     public static string UploadFile(string filePath, UploadPolicy uploadPolicy) 
     {      
-      string key = uploadPolicy.keyPrefix + "fileX.csv";
+      string fileName = Path.GetFileName(filePath);
+      string key = uploadPolicy.keyPrefix + fileName;
       Uri uri = new Uri(uploadPolicy.url);
       HttpWebRequest webRequest = WebRequest.Create(uri) as HttpWebRequest;
 
