@@ -28,6 +28,7 @@ namespace GrainBridge
       var boundary = Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Replace('=', 'z');
       webRequest.ContentType = string.Format(CultureInfo.InvariantCulture, "multipart/form-data; boundary={0}", boundary);
       webRequest.Method = "POST";
+      webRequest.Timeout = 900000; // 15 Mins
 
       using (var reqStream = webRequest.GetRequestStream())
       {
@@ -55,9 +56,10 @@ namespace GrainBridge
 
           reqStream.Write(endBoundaryBytes, 0, endBoundaryBytes.Length);
       }
+      HttpWebResponse response = null;
       try
       {
-          HttpWebResponse response = webRequest.GetResponse() as HttpWebResponse;
+          response = webRequest.GetResponse() as HttpWebResponse;
           // return the file key
           return key;
       }
@@ -77,6 +79,10 @@ namespace GrainBridge
           }
 
           throw new Exception(responseText, ex);
+      }
+      finally 
+      {
+          response.Dispose();
       }
     }
 
