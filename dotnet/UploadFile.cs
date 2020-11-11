@@ -32,7 +32,6 @@ namespace GrainBridge
       using (var reqStream = webRequest.GetRequestStream())
       {
           WriteFormDatum(reqStream, "key", key, boundary);
-          WriteFormDatum(reqStream, "Content-Type", "text/plain", boundary);
           foreach (string field in uploadPolicy.fields.Keys)
           {
               WriteFormDatum(reqStream, field, uploadPolicy.fields[field], boundary);
@@ -64,7 +63,20 @@ namespace GrainBridge
       }
       catch (WebException ex)
       {
-          throw ex;
+          string responseText = "";
+          try
+          {
+              using (var reader = new System.IO.StreamReader(ex.Response.GetResponseStream()))
+              {
+                  responseText = reader.ReadToEnd();                
+              }
+          }
+          catch 
+          {
+              throw ex;
+          }
+
+          throw new Exception(responseText, ex);
       }
     }
 
